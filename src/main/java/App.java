@@ -1,3 +1,4 @@
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -11,21 +12,26 @@ public class App {
         this.eventLogger = eventLogger;
     }
 
-    public static  void main(String [] args){
+    public static  void main(String [] args) throws BeansException {
 
         ApplicationContext ctx = new ClassPathXmlApplicationContext("spring.xml");
-        App app = (App) ctx.getBean("app");
-        //App app = new App();
+        App app = (App) ctx.getBean ("app");
 
+        Event event = ctx.getBean(Event.class);
+        app.logEvent(event, "Some event for user 1");
+
+        event = ctx.getBean(Event.class);
+        app.logEvent(event, "Some event for user 1");
         //app.client = new Client("1", "John Smith");
         //app.eventLogger = new ConsoleEventLogger();
 
-        app.logEvent("Some event for user 1");
-        app.logEvent("Some event for user 2");
+        //app.logEvent("Some event for user 1");
+        //app.logEvent("Some event for user 2");
     }
 
-    private void logEvent(String msg){
+    private void logEvent(Event event, String msg){
         String message = msg.replaceAll(client.getid(), client.getfullName());
-        eventLogger.logEvent(message);
+        event.setMsg(message);
+        eventLogger.logEvent(event);
     }
 }
