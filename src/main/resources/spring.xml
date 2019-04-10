@@ -9,6 +9,16 @@
         <constructor-arg value="John Smith"/>
     </bean>
 
+    <bean id="df" class="java.text.DateFormat" factory-method="getDateTimeInstance" scope="prototype">
+    </bean>
+
+    <bean id="event" class="Event" scope="prototype">
+        <constructor-arg>
+            <bean class="java.util.Date"/>
+        </constructor-arg>
+        <constructor-arg ref="df"/>
+    </bean>
+
     <bean id="eventLogger" class="ConsoleEventLogger"/>
 
     <bean id="fileEventLogger" class="FileEventLogger" init-method="init">
