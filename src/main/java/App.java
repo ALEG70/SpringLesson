@@ -3,14 +3,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.Map;
+
 public class App {
 
-    Client client;
-    EventLogger eventLogger;
+    private Client client;
+    private Map<EventType,EventLogger> loggers;
+    private EventLogger defaultLogger;
 
-    public App(Client client, EventLogger eventLogger) {
+    public App(Client client,EventLogger eventLogger, Map<EventType,EventLogger> loggers) {
         this.client = client;
-        this.eventLogger = eventLogger;
+        this.defaultLogger = eventLogger;
+        this.loggers = loggers;
     }
 
     public static  void main(String [] args) throws BeansException {
@@ -19,22 +23,18 @@ public class App {
         App app = (App) ctx.getBean ("app");
 
         Event event = ctx.getBean(Event.class);
-        app.logEvent(event, "Some event for user 1");
-
-        event = ctx.getBean(Event.class);
-        app.logEvent(event, "Some event for user 1");
+        app.logEvent("Some event for user 1", EventType.ERROR, event);
 
         ctx.close();
-        //app.client = new Client("1", "John Smith");
-        //app.eventLogger = new ConsoleEventLogger();
 
-        //app.logEvent("Some event for user 1");
-        //app.logEvent("Some event for user 2");
     }
 
-    private void logEvent(Event event, String msg){
-        String message = msg.replaceAll(client.getid(), client.getfullName());
-        event.setMsg(message);
-        eventLogger.logEvent(event);
+    private void logEvent(String msg, EventType type, Event event){
+        EventLogger logger = loggers.get(type);
+        event.setMsg(msg);
+        if(logger == null){
+            logger = defaultLogger;
+        }
+        logger.logEvent(event);
     }
 }

@@ -19,30 +19,17 @@
         <constructor-arg ref="df"/>
     </bean>
 
-    <bean id="eventLogger" class="ConsoleEventLogger"/>
-
-    <bean id="fileEventLogger" class="FileEventLogger" init-method="init">
-        <constructor-arg value="events_log.txt"/>
-    </bean>
-
-    <bean id="cacheFileEventLogger" class="CacheFileEventLogger" init-method="init" destroy-method="destroy">
-        <constructor-arg value="events_log.txt"/>
-        <constructor-arg value="5"/>
-    </bean>
-
     <bean id="app" class="App">
         <constructor-arg ref="client"/>
-        <constructor-arg ref="cacheFileEventLogger"/>
-    </bean>
-
-    <bean id="event" class="Event" scope="prototype">
+        <constructor-arg ref="eventLogger"/>
         <constructor-arg>
-            <bean class="java.util.Date"/>
+            <map>
+                <entry key="INFO" value-ref="eventLogger"/>
+                <entry key="ERROR" value-ref="combinedEventLogger"/>
+            </map>
         </constructor-arg>
-        <constructor-arg ref="dateFormat"/>
-
     </bean>
 
-    <bean id="dateFormat" class="java.text.DateFormat" factory-method="getDateTimeInstance" />
+    <import resource="loggers.xml"/>
 
 </beans>
